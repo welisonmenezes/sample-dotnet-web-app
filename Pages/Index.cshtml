@@ -1,0 +1,90 @@
+﻿@page ""
+@* @using System.Data.SqlClient
+@using Microsoft.AspNetCore.Http
+@using Security
+@using Microsoft.Extensions.Configuration *@
+
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome @Model.RequestVerb</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div>
+    <form method="post">
+        Name:
+        <input asp-for="@Model.RequestVerb" />
+        <input name="email" />
+        <input type="submit" />
+    </form>
+    <div>
+        @Html.Raw(@Model.Logins)
+    </div>
+</div>
+
+@*
+@inject IConfiguration configuration
+@functions {
+    [BindProperty] public string RequestVerb { get; set; }
+    public string Logins { get; set; }
+
+    public ActionResult OnPost()
+    {
+
+        CookieOptions option = new CookieOptions();  
+        option.Expires = DateTime.Now.AddMinutes(30);  
+        Response.Cookies.Append("cookie-key", "cookie-value", option); 
+
+
+
+        RequestVerb = "Post";
+        Console.WriteLine("post");
+        Console.WriteLine(Request.Form["email"]);
+        return Page();
+    }
+
+    [IsLoggedIn()]
+    public ActionResult OnGet()
+    {
+        string cookieValueFromReq = Request.Cookies["cookie-key"];
+        System.Console.WriteLine(cookieValueFromReq);
+
+        string security = AesOperation.EncryptString(configuration.GetSection("SecurityKey").Value, "the-login-here");
+        System.Console.WriteLine(security);
+        string unsecurity = AesOperation.DecryptString(configuration.GetSection("SecurityKey").Value, security);
+        System.Console.WriteLine(unsecurity);
+
+
+        IsLoggedInAttribute MyAttribute = (IsLoggedInAttribute) Attribute.GetCustomAttribute(typeof(string), typeof (IsLoggedInAttribute));
+        System.Console.WriteLine(MyAttribute);
+
+        string constr = @"Server=DESKTOP-0KTTMSL;Database=MyDataBase;Trusted_Connection=True;";
+        using (SqlConnection con = new(constr))
+        {
+            string query = "SELECT [Login] FROM [MyDataBase].[dbo].[Users]";
+            using SqlCommand cmd = new(query, con);
+            cmd.Connection = con;
+            con.Open();
+            using (SqlDataReader sdr = cmd.ExecuteReader())
+            {
+                while (sdr.Read())
+                {
+                    Console.WriteLine(sdr["Login"].ToString());
+                    Logins += sdr["Login"].ToString() + "<br>";
+                }
+            }
+            con.Close();
+        }
+
+
+        RequestVerb = "Get";
+        Console.WriteLine("get");
+        return Page();
+    }
+}
+*@
