@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Trilha_Jr_1.Services;
 
 namespace Trilha_Jr_1.Pages
 {
     public class IndexModel : PageModel
     {
-
-        public IndexModel() 
-        {}
+        private UserDAO userDAO;
+        public IndexModel(UserDAO userDAO) 
+        {
+            this.userDAO = userDAO;
+        }
 
         public void OnGet() 
-        {}
+        {
+            if (!userDAO.HasAny()) Response.Redirect("Setup");
+        }
 
         public void OnPost()
         {}

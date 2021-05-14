@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Trilha_Jr_1.Services;
 
 namespace Trilha_Jr_1
 {
@@ -24,6 +25,10 @@ namespace Trilha_Jr_1
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            services.AddScoped<UserDAO>();
+            services.AddScoped<CategoryDAO>();
+            services.AddScoped<PostDAO>();
+            services.AddScoped<CategoryPostDAO>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
