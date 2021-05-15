@@ -1,16 +1,26 @@
 using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace Trilha_Jr_1.Services
 {
     public class PostDAO
     {
+        private IConfiguration configuration;
+        private string connectionString { get; set; }
+
+        public PostDAO(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+            this.connectionString = configuration.GetConnectionString("Default");
+        }
+
         public PostDAO CreateTable()
         {
             try
             {
-                string constr = @"Server=DESKTOP-0KTTMSL;Database=Test;Trusted_Connection=True;";
-                using (SqlConnection con = new(constr))
+                using (SqlConnection con = new(connectionString))
                 {
+                    con.Open();
                     string query = @"
                     IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Posts' AND xtype='U')
                         BEGIN
@@ -26,11 +36,7 @@ namespace Trilha_Jr_1.Services
                         END";
                     using SqlCommand cmd = new(query, con);
                     cmd.Connection = con;
-                    con.Open();
-                    using (SqlCommand command = new SqlCommand(constr, con))
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
+                    cmd.ExecuteNonQuery();
                     con.Close();
                 }
                 return this;
@@ -45,14 +51,13 @@ namespace Trilha_Jr_1.Services
         {
             try
             {
-                string constr = @"Server=DESKTOP-0KTTMSL;Database=Test;Trusted_Connection=True;";
-                using (SqlConnection con = new(constr))
+                using (SqlConnection con = new(connectionString))
                 {
+                    con.Open();
                     bool hasOcurrency = false;
                     string query = "SELECT TOP(1) PostID FROM Posts";
                     using SqlCommand cmd = new(query, con);
                     cmd.Connection = con;
-                    con.Open();
                     using (SqlDataReader sdr = cmd.ExecuteReader())
                     {
                         hasOcurrency = sdr.Read();

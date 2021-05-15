@@ -1,17 +1,27 @@
 using System.Data.SqlClient;
 using Trilha_Jr_1.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Trilha_Jr_1.Services
 {
     public class UserDAO
     {
+        private IConfiguration configuration;
+        private string connectionString { get; set; }
+        
+        public UserDAO(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+            this.connectionString = configuration.GetConnectionString("Default");
+        }
+        
         public UserDAO CreateTable()
         {
             try
             {
-                string constr = @"Server=DESKTOP-0KTTMSL;Database=Test;Trusted_Connection=True;";
-                using (SqlConnection con = new(constr))
+                using (SqlConnection con = new(connectionString))
                 {
+                    con.Open();
                     string query = @"
                     IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Users' AND xtype='U')
                         BEGIN
@@ -26,11 +36,7 @@ namespace Trilha_Jr_1.Services
                         END";
                     using SqlCommand cmd = new(query, con);
                     cmd.Connection = con;
-                    con.Open();
-                    using (SqlCommand command = new SqlCommand(constr, con))
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
+                    cmd.ExecuteNonQuery();
                     con.Close();
                 }
                 return this;
@@ -45,18 +51,14 @@ namespace Trilha_Jr_1.Services
         {
             try
             {
-                string constr = @"Server=DESKTOP-0KTTMSL;Database=Test;Trusted_Connection=True;";
-                using (SqlConnection con = new(constr))
+                using (SqlConnection con = new(connectionString))
                 {
+                    con.Open();
                     string query = @"INSERT INTO Users (Name, Email, Password)
                     VALUES ('"+ user.Name +"', '"+ user.Email +"', '"+ user.Password +"');";
                     using SqlCommand cmd = new(query, con);
                     cmd.Connection = con;
-                    con.Open();
-                    using (SqlCommand command = new SqlCommand(constr, con))
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
+                    cmd.ExecuteNonQuery();
                     con.Close();
                 }
                 return this;
@@ -71,14 +73,13 @@ namespace Trilha_Jr_1.Services
         {
             try
             {
-                string constr = @"Server=DESKTOP-0KTTMSL;Database=Test;Trusted_Connection=True;";
-                using (SqlConnection con = new(constr))
+                using (SqlConnection con = new(connectionString))
                 {
+                    con.Open();
                     bool hasOcurrency = false;
                     string query = "SELECT TOP(1) UserID FROM Users";
                     using SqlCommand cmd = new(query, con);
                     cmd.Connection = con;
-                    con.Open();
                     using (SqlDataReader sdr = cmd.ExecuteReader())
                     {
                         hasOcurrency = sdr.Read();
