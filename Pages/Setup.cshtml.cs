@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Trilha_Jr_1.Models;
@@ -26,7 +25,9 @@ namespace Trilha_Jr_1.Pages
         }
 
         public void OnGet() 
-        {}
+        {
+            if (userDAO.HasAny()) Response.Redirect("Index");
+        }
 
         public void OnPost()
         {
@@ -43,6 +44,10 @@ namespace Trilha_Jr_1.Pages
                 postDAO.CreateTable();
                 categoryDAO.CreateTable();
                 categoryPostDAO.CreateTable();
+            }
+            else
+            {
+                Response.Redirect("Index");
             }
         }
     }

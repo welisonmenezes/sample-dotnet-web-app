@@ -1,4 +1,5 @@
 using System;
+
 namespace Trilha_Jr_1.Models
 {
     public class User
